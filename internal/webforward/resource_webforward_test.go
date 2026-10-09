@@ -22,6 +22,35 @@ func TestResourceWebForwardSchema(t *testing.T) {
 	if !resource.Schema["request_to"].ForceNew {
 		t.Error("request_to must force a new resource")
 	}
+	if !resource.Schema["default_redirect_to"].Required {
+		t.Error("default_redirect_to must be required")
+	}
+	if !resource.Schema["default_forward_type"].Required {
+		t.Error("default_forward_type must be required")
+	}
+	if !resource.Schema["default_redirect_type"].Computed {
+		t.Error("default_redirect_type must be computed")
+	}
+	if !resource.Schema["certificate_name"].Computed {
+		t.Error("certificate_name must be computed")
+	}
+	if !resource.Schema["expiration_days"].Computed {
+		t.Error("expiration_days must be computed")
+	}
+
+	recordSchema := resource.Schema["record"].Elem.(*schema.Resource).Schema
+	for _, field := range []string{"redirect_to", "forward_type", "priority", "rule"} {
+		if !recordSchema[field].Required {
+			t.Errorf("record.%s must be required", field)
+		}
+	}
+
+	ruleSchema := recordSchema["rule"].Elem.(*schema.Resource).Schema
+	for _, field := range []string{"header", "match_criteria", "value"} {
+		if !ruleSchema[field].Required {
+			t.Errorf("record.rule.%s must be required", field)
+		}
+	}
 }
 
 func TestDataSourceWebForwardSchema(t *testing.T) {
@@ -75,6 +104,8 @@ func TestExpandAndFlattenWebForward(t *testing.T) {
 
 	expanded.GUID = "ABC123"
 	expanded.State = "ACTIVE"
+	expanded.RedirectType = "HTTP"
+	expanded.RequestTo = "http://www.example.com"
 	if err := flattenWebForward(expanded, rd); err != nil {
 		t.Fatal(err)
 	}
@@ -83,6 +114,12 @@ func TestExpandAndFlattenWebForward(t *testing.T) {
 	}
 	if got := rd.Get("record.#").(int); got != 1 {
 		t.Errorf("record count = %d, want 1", got)
+	}
+	if got := rd.Get("default_redirect_type").(string); got != "HTTP" {
+		t.Errorf("default_redirect_type = %q, want HTTP", got)
+	}
+	if got := rd.Get("request_to").(string); got != "www.example.com" {
+		t.Errorf("request_to = %q, want www.example.com", got)
 	}
 }
 

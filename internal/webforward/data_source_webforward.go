@@ -47,18 +47,30 @@ func findWebForward(services *service.Service, zoneName string, rd *schema.Resou
 	}
 
 	requestTo := rd.Get("request_to").(string)
-	_, listResponse, err := services.WebForwardService.List(zoneName, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
+	normalizedRequestTo := normalizeRequestTo(requestTo)
 	var matches []*sdkwebforward.WebForward
 
-	for _, webForward := range listResponse.WebForwards {
-		if strings.EqualFold(webForward.RequestTo, requestTo) {
-			matches = append(matches, webForward)
+	for offset := 0; ; {
+		_, listResponse, err := services.WebForwardService.List(zoneName, &sdkhelper.QueryInfo{Offset: offset})
+
+		if err != nil {
+			return nil, err
 		}
+
+		for _, webForward := range listResponse.WebForwards {
+			if webForward != nil && normalizeRequestTo(webForward.RequestTo) == normalizedRequestTo {
+				matches = append(matches, webForward)
+			}
+		}
+
+		resultInfo := listResponse.ResultInfo
+		if resultInfo == nil ||
+			resultInfo.ReturnedCount == 0 ||
+			offset+resultInfo.ReturnedCount >= resultInfo.TotalCount {
+			break
+		}
+
+		offset += resultInfo.ReturnedCount
 	}
 
 	switch len(matches) {
@@ -69,4 +81,9 @@ func findWebForward(services *service.Service, zoneName string, rd *schema.Resou
 	default:
 		return nil, sdkerrors.MultipleResourceFoundError("WebForward", requestTo)
 	}
+}
+
+func normalizeRequestTo(requestTo string) string {
+	normalized := strings.ToLower(strings.TrimSpace(requestTo))
+	return strings.TrimPrefix(normalized, "http://")
 }

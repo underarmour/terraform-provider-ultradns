@@ -114,11 +114,8 @@ func expandWebForward(rd *schema.ResourceData) *sdkwebforward.WebForward {
 		DefaultRedirectTo:      rd.Get("default_redirect_to").(string),
 		DefaultForwardType:     rd.Get("default_forward_type").(string),
 		RelativeForwardType:    rd.Get("relative_forward_type").(string),
-		DefaultRedirectType:    rd.Get("default_redirect_type").(string),
 		CertificateID:          rd.Get("certificate_id").(string),
 		CertificateManagedType: rd.Get("certificate_managed_type").(string),
-		CertificateName:        rd.Get("certificate_name").(string),
-		ExpirationDays:         rd.Get("expiration_days").(string),
 	}
 
 	if records, ok := rd.GetOk("record"); ok {
@@ -163,11 +160,11 @@ func expandWebForwardRules(rules []interface{}) []sdkwebforward.Rule {
 func flattenWebForward(webForward *sdkwebforward.WebForward, rd *schema.ResourceData) error {
 	fields := map[string]interface{}{
 		"guid":                     webForward.GUID,
-		"request_to":               webForward.RequestTo,
+		"request_to":               normalizeRequestTo(webForward.RequestTo),
 		"default_redirect_to":      webForward.DefaultRedirectTo,
 		"default_forward_type":     webForward.DefaultForwardType,
 		"relative_forward_type":    webForward.RelativeForwardType,
-		"default_redirect_type":    webForward.DefaultRedirectType,
+		"default_redirect_type":    webForward.RedirectType,
 		"certificate_id":           webForward.CertificateID,
 		"certificate_managed_type": webForward.CertificateManagedType,
 		"certificate_name":         webForward.CertificateName,

@@ -17,6 +17,28 @@ func resourceWebForwardSchema() map[string]*schema.Schema {
 		StateFunc:        helper.CaseInSensitiveState,
 	}
 	webForwardSchema["request_to"].ForceNew = true
+	webForwardSchema["default_redirect_to"].Required = true
+	webForwardSchema["default_redirect_to"].Optional = false
+	webForwardSchema["default_forward_type"].Required = true
+	webForwardSchema["default_forward_type"].Optional = false
+
+	recordResource := webForwardSchema["record"].Elem.(*schema.Resource)
+	recordResource.Schema["redirect_to"].Required = true
+	recordResource.Schema["redirect_to"].Optional = false
+	recordResource.Schema["forward_type"].Required = true
+	recordResource.Schema["forward_type"].Optional = false
+	recordResource.Schema["priority"].Required = true
+	recordResource.Schema["priority"].Optional = false
+	recordResource.Schema["rule"].Required = true
+	recordResource.Schema["rule"].Optional = false
+
+	ruleResource := recordResource.Schema["rule"].Elem.(*schema.Resource)
+	ruleResource.Schema["header"].Required = true
+	ruleResource.Schema["header"].Optional = false
+	ruleResource.Schema["match_criteria"].Required = true
+	ruleResource.Schema["match_criteria"].Optional = false
+	ruleResource.Schema["value"].Required = true
+	ruleResource.Schema["value"].Optional = false
 
 	return webForwardSchema
 }
@@ -85,7 +107,7 @@ func webForwardSchema() map[string]*schema.Schema {
 		},
 		"default_redirect_type": {
 			Type:     schema.TypeString,
-			Optional: true,
+			Computed: true,
 		},
 		"certificate_id": {
 			Type:     schema.TypeString,
@@ -97,11 +119,11 @@ func webForwardSchema() map[string]*schema.Schema {
 		},
 		"certificate_name": {
 			Type:     schema.TypeString,
-			Optional: true,
+			Computed: true,
 		},
 		"expiration_days": {
 			Type:     schema.TypeString,
-			Optional: true,
+			Computed: true,
 		},
 		"state": {
 			Type:     schema.TypeString,
