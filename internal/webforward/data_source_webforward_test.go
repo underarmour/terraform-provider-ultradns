@@ -57,7 +57,9 @@ func TestFindWebForwardByRequestToFollowsPagesAndNormalizesHTTP(t *testing.T) {
 		t.Fatalf("guid = %q, want target-guid", webForward.GUID)
 	}
 
-	rd.Set("request_to", "www.example.com")
+	if err := rd.Set("request_to", "www.example.com"); err != nil {
+		t.Fatal(err)
+	}
 	webForward, err = findWebForward(services, "example.com.", rd)
 	if err != nil {
 		t.Fatal(err)
