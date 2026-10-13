@@ -87,3 +87,11 @@ func normalizeRequestTo(requestTo string) string {
 	normalized := strings.ToLower(strings.TrimSpace(requestTo))
 	return strings.TrimPrefix(normalized, "http://")
 }
+
+func requestToDiffSuppress(k, old, new string, rd *schema.ResourceData) bool {
+	if old == "" || new == "" {
+		return false
+	}
+
+	return normalizeRequestTo(old) == normalizeRequestTo(new)
+}

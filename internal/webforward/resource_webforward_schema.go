@@ -17,6 +17,7 @@ func resourceWebForwardSchema() map[string]*schema.Schema {
 		StateFunc:        helper.CaseInSensitiveState,
 	}
 	webForwardSchema["request_to"].ForceNew = true
+	webForwardSchema["request_to"].DiffSuppressFunc = requestToDiffSuppress
 	webForwardSchema["default_redirect_to"].Required = true
 	webForwardSchema["default_redirect_to"].Optional = false
 	webForwardSchema["default_forward_type"].Required = true

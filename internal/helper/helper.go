@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"net"
 	"sort"
 	"strconv"
 	"strings"
@@ -58,7 +59,7 @@ func RecordDataDiffSuppress(k, old, new string, rd *schema.ResourceData) bool {
 		recType = helper.GetRecordTypeFullString(val.(string))
 	}
 
-	if recType == record.CAA || recType == record.SVCB || recType == record.HTTPS {
+	if recType == record.AAAA || recType == record.CAA || recType == record.SVCB || recType == record.HTTPS {
 		return fmtDiffSuppress(recType, rd)
 	}
 
@@ -75,6 +76,8 @@ func fmtDiffSuppress(recordType string, rd *schema.ResourceData) bool {
 	}
 
 	switch recordType {
+	case record.AAAA:
+		return formatAAAARecordSet(oldData).Equal(formatAAAARecordSet(newData))
 	case record.CAA:
 		return formatCAARecordSet(oldData).Equal(formatCAARecordSet(newData))
 	case record.SVCB, record.HTTPS:
@@ -82,6 +85,20 @@ func fmtDiffSuppress(recordType string, rd *schema.ResourceData) bool {
 	}
 
 	return false
+}
+
+func formatAAAARecordSet(data *schema.Set) *schema.Set {
+	result := &schema.Set{F: schema.HashString}
+
+	for _, value := range data.List() {
+		recordData := value.(string)
+		if ip := net.ParseIP(strings.TrimSpace(recordData)); ip != nil && ip.To4() == nil {
+			recordData = ip.String()
+		}
+		result.Add(recordData)
+	}
+
+	return result
 }
 
 func URIDiffSuppress(k, old, new string, rd *schema.ResourceData) bool {
