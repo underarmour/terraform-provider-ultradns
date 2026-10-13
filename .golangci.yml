@@ -1,9 +1,0 @@
-# Fork-only: the webforward acceptance test still uses the deprecated
-# resource.TestCase.Providers field. Remove once it uses ProviderFactories.
-version: "2"
-linters:
-  exclusions:
-    rules:
-      - linters:
-          - staticcheck
-        text: "SA1019"
