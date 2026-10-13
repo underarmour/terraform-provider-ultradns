@@ -23,9 +23,9 @@ func TestAccResourceWebForward(t *testing.T) {
 	requestTo := "www." + strings.TrimSuffix(zoneName, ".")
 
 	testCase := resource.TestCase{
-		PreCheck:     acctest.TestPreCheck(t),
-		Providers:    acctest.TestAccProviders,
-		CheckDestroy: testAccCheckWebForwardDestroy,
+		PreCheck:          acctest.TestPreCheck(t),
+		ProviderFactories: acctest.TestAccProviderFactories,
+		CheckDestroy:      testAccCheckWebForwardDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccResourceWebForward(zoneName, requestTo),
