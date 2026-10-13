@@ -1,5 +1,5 @@
-# Fork-only: golangci-lint 2.14 flags the repo-wide deprecated
-# resource.TestCase.Providers field. Remove once tests use ProviderFactories.
+# Fork-only: the webforward acceptance test still uses the deprecated
+# resource.TestCase.Providers field. Remove once it uses ProviderFactories.
 version: "2"
 linters:
   exclusions:
