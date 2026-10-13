@@ -2,7 +2,7 @@ package zone
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
+	zone "github.com/ultradns/terraform-provider-ultradns/internal/forkzone"
 )
 
 func flattenZoneProperties(zoneResponse *zone.Response, rd *schema.ResourceData) error {
@@ -50,6 +50,7 @@ func flattenPrimaryZone(zoneResponse *zone.Response, rd *schema.ResourceData) er
 	}
 
 	primaryCreateInfo["inherit"] = zoneResponse.Inherit
+	primaryCreateInfo["valimail_monitor"] = zoneResponse.ValimailMonitor != nil && *zoneResponse.ValimailMonitor
 	primaryCreateInfo["tsig"] = getTsigList(zoneResponse.Tsig)
 	primaryCreateInfo["restrict_ip"] = getRestrictIPListSet(zoneResponse.RestrictIPList)
 	primaryCreateInfo["notify_addresses"] = getNotifyAddressesSet(zoneResponse.NotifyAddresses)

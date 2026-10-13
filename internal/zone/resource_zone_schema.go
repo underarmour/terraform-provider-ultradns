@@ -96,6 +96,12 @@ func primaryZoneCreateInfoResource() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"valimail_monitor": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Default:     false,
+				Description: "Enable Valimail Monitor for a primary zone. Changes are applied in place.",
+			},
 			"original_zone_name": {
 				Type:     schema.TypeString,
 				Optional: true,

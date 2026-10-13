@@ -96,6 +96,7 @@ When `type` is "ALIAS" [`alias_create_info`](##nested-alias_create_info-block-ha
 
 * `create_type` - (Required) (String) Indicates the method for creating the primary zone. Valid values are `NEW`, `COPY`, `TRANSFER`.
 * `force_import` - (Optional) (Boolean) Indicates whether or not to move existing records from zones into this new zone. Default value set to false.
+* `valimail_monitor` - (Optional) (Boolean) Enables Valimail Monitor for a primary zone. Defaults to `false`. Changes use PATCH in place, without replacing the zone. Applies only to primary zones.
 * `original_zone_name` - (Optional) (String) The name of the zone being copied. The existing zone must be owned by the same account as the new zone. It needs to be provided if [`create_type`](#create_type) is `COPY`.
 * `inherit` - (Optional) (String) Defines whether this zone should inherit the zone transfer values from the Account, and also specifies which values to inherit. Valid values are `ALL`, `NONE`, any combination of `IP_RANGE`, `NOTIFY_IP`, `TSIG`. Separate multiple values with a comma.<br/>
 Example: `IP_RANGE, NOTIFY_IP`

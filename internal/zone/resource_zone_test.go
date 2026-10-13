@@ -9,14 +9,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/ultradns/terraform-provider-ultradns/internal/acctest"
 	"github.com/ultradns/terraform-provider-ultradns/internal/errors"
+	zone "github.com/ultradns/terraform-provider-ultradns/internal/forkzone"
 	"github.com/ultradns/terraform-provider-ultradns/internal/service"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
 const (
 	zoneResourceName    = "primary"
 	defaultCount        = "3"
-	defaultRecordCount  = "4"   // SOA + 3 NS records provisioned by UltraDNS on new zone creation
+	defaultRecordCount  = "4" // SOA + 3 NS records provisioned by UltraDNS on new zone creation
 	defaultZoneStatus   = "ACTIVE"
 	defaultDNSSECStatus = "UNSIGNED"
 )

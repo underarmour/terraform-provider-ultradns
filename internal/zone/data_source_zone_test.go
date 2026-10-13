@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/ultradns/terraform-provider-ultradns/internal/acctest"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
+	zone "github.com/ultradns/terraform-provider-ultradns/internal/forkzone"
 )
 
 func TestAccDataSourceZonePrimary(t *testing.T) {

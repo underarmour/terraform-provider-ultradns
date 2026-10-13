@@ -6,9 +6,9 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	zone "github.com/ultradns/terraform-provider-ultradns/internal/forkzone"
 	"github.com/ultradns/terraform-provider-ultradns/internal/service"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
 func DataSourceZone() *schema.Resource {

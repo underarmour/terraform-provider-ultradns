@@ -1,6 +1,7 @@
 package service
 
 import (
+	zone "github.com/ultradns/terraform-provider-ultradns/internal/forkzone"
 	cdnresource "github.com/ultradns/ultradns-go-sdk/pkg/cdn/resource"
 	"github.com/ultradns/ultradns-go-sdk/pkg/client"
 	"github.com/ultradns/ultradns-go-sdk/pkg/dirgroup/geo"
@@ -8,7 +9,6 @@ import (
 	"github.com/ultradns/ultradns-go-sdk/pkg/probe"
 	"github.com/ultradns/ultradns-go-sdk/pkg/record"
 	"github.com/ultradns/ultradns-go-sdk/pkg/webforward"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
 type Service struct {

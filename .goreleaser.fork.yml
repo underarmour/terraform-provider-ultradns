@@ -1,0 +1,32 @@
+# Fork-only release config for the temporary Valimail Monitor build.
+# Used by .github/workflows/fork-release.yml; upstream uses .goreleaser.yml.
+version: 2
+project_name: terraform-provider-ultradns
+builds:
+  - env:
+      - CGO_ENABLED=0
+      - GOWORK=off
+      - GOFLAGS=-mod=readonly
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    flags:
+      - -trimpath
+    ldflags:
+      - '-s -w'
+    targets:
+      - linux_amd64
+      - darwin_arm64
+    binary: '{{ .ProjectName }}_v{{ .Version }}'
+archives:
+  - formats: [zip]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+release:
+  github:
+    owner: underarmour
+    name: terraform-provider-ultradns
+  prerelease: true
+  make_latest: false
+changelog:
+  disable: true

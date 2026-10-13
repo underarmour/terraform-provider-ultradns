@@ -2,7 +2,7 @@ package zone
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
+	zone "github.com/ultradns/terraform-provider-ultradns/internal/forkzone"
 )
 
 func flattenPrimaryZoneInfo(zoneResponse *zone.Response, rd *schema.ResourceData) error {

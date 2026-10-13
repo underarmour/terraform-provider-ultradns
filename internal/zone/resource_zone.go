@@ -8,10 +8,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/ultradns/terraform-provider-ultradns/internal/errors"
+	zone "github.com/ultradns/terraform-provider-ultradns/internal/forkzone"
 	provhelper "github.com/ultradns/terraform-provider-ultradns/internal/helper"
 	"github.com/ultradns/terraform-provider-ultradns/internal/service"
 	"github.com/ultradns/ultradns-go-sdk/pkg/helper"
-	"github.com/ultradns/ultradns-go-sdk/pkg/zone"
 )
 
 func ResourceZone() *schema.Resource {
@@ -94,12 +94,44 @@ func resourceZoneUpdate(ctx context.Context, rd *schema.ResourceData, meta inter
 
 	zoneData := newZone(rd)
 
-	_, err := services.ZoneService.UpdateZone(zoneName, zoneData)
-	if err != nil {
-		return diag.FromErr(err)
+	isPrimary := zoneData.Properties.Type == zone.Primary
+	valimailChanged := isPrimary && rd.HasChange("primary_create_info.0.valimail_monitor")
+	needsPut := !valimailChanged || primarySettingsChanged(rd)
+	if needsPut {
+		// The API only accepts Valimail changes through PATCH.
+		if zoneData.PrimaryCreateInfo != nil {
+			zoneData.PrimaryCreateInfo.ValimailMonitor = nil
+		}
+		if _, err := services.ZoneService.UpdateZone(zoneName, zoneData); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+	// Re-assert Valimail after any primary PUT: whether PUT preserves the
+	// omitted field is undocumented, and PATCH with the same value is idempotent.
+	if valimailChanged || (isPrimary && needsPut) {
+		enabled := rd.Get("primary_create_info.0.valimail_monitor").(bool)
+		patch := &zone.Zone{
+			PrimaryCreateInfo: &zone.PrimaryZone{ValimailMonitor: &enabled},
+			ChangeComment:     rd.Get("change_comment").(string),
+		}
+		if _, err := services.ZoneService.PartialUpdateZone(zoneName, patch); err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return resourceZoneRead(ctx, rd, meta)
+}
+
+func primarySettingsChanged(rd *schema.ResourceData) bool {
+	if rd.HasChange("change_comment") {
+		return true
+	}
+	for key := range primaryZoneCreateInfoResource().Schema {
+		if key != "valimail_monitor" && rd.HasChange("primary_create_info.0."+key) {
+			return true
+		}
+	}
+	return false
 }
 
 func resourceZoneDelete(ctx context.Context, rd *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -166,6 +198,9 @@ func getPrimaryCreateInfo(rd *schema.ResourceData) *zone.PrimaryZone {
 
 	if val, ok := rd.GetOk("primary_create_info"); ok && len(val.([]interface{})) > 0 {
 		createInfoData := val.([]interface{})[0].(map[string]interface{})
+
+		enabled, _ := createInfoData["valimail_monitor"].(bool)
+		primaryCreateInfo.ValimailMonitor = &enabled
 
 		if val, ok := createInfoData["create_type"]; ok {
 			primaryCreateInfo.CreateType = val.(string)
