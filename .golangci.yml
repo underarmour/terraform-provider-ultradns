@@ -1,0 +1,9 @@
+# Fork-only: golangci-lint 2.14 flags the repo-wide deprecated
+# resource.TestCase.Providers field. Remove once tests use ProviderFactories.
+version: "2"
+linters:
+  exclusions:
+    rules:
+      - linters:
+          - staticcheck
+        text: "SA1019"

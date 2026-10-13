@@ -12,6 +12,7 @@ Remove it once upstream supports Valimail Monitor.
 | `internal/forkzone/` | Adapter adding `valimailMonitor` on top of the pinned, unmodified SDK |
 | `.goreleaser.fork.yml` | `linux_amd64` and `darwin_arm64` ZIPs plus `SHA256SUMS`, GitHub prerelease |
 | `.github/workflows/fork-release.yml` | Runs on `v*-valimail.*` tags in this fork only |
+| `.golangci.yml` | Excludes staticcheck SA1019 (deprecated `TestCase.Providers`) so CI lint passes |
 | `FORK-RELEASE.md` | This file |
 
 The upstream workflows and `.goreleaser.yml` are unchanged.
@@ -110,7 +111,7 @@ Run the reverse when returning to upstream.
 
 ## Removal
 
-1. Delete the four fork-only paths listed above.
+1. Delete the fork-only paths listed above.
 2. Point the `zone` imports in `internal/service` and `internal/zone` back at
    `github.com/ultradns/ultradns-go-sdk/pkg/zone`.
 3. Remove `valimail_monitor` from `internal/zone`, or adopt the upstream field.
